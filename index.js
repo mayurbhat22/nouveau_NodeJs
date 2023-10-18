@@ -14,38 +14,20 @@ app.use(cors({ origin: true }));
 //app.use(cors({ origin: "<http://localhost:3000>" }))
 app.use(express.json());
 
+
 app.get("/", (req, res) => {
-  res.json({ message: "Good evening" });
+
+    res.json({ message: "Good evening" });
 });
+
 
 //Routes
 const registrationRoutes = require("./routes/registration");
+const loginRoutes = require("./routes/login");
 
 app.use("/registration", registrationRoutes);
+app.use("/login", loginRoutes);
 
-app.post("/login", async (req, res) => {
-  const body = req.body;
-
-  const user = await prisma.user.findFirst({
-    where: { email: body.email },
-  });
-
-  if (user == null) {
-    res.status(400);
-    res.send("There is no user with that email");
-    return;
-  }
-
-  const valid = await bcrypt.compare(body.password, user.password);
-  if (!valid) {
-    res.status(400);
-    res.send("Incorrect Password");
-    return;
-  }
-
-  res.status(200);
-  res.send();
-});
 
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`);
