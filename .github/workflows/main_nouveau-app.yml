@@ -25,6 +25,7 @@ jobs:
         run: |
           npm install -g prisma@5.5.2
           npm install @prisma/client
+          npx prisma generate
           npm install
           npm run build --if-present
           npm run test --if-present
