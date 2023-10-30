@@ -23,7 +23,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install -g prisma@5.5.2
+          npm install -g prisma@5.4.1
           npm install @prisma/client
           npx prisma generate
           npm install
