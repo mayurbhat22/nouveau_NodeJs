@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient({
-  datasourceURL: 'sqlserver://nvadmin:Nvhealth23@nvhealth.database.windows.net:1433/nvdb'});
+  datasourceURL: 'sqlserver://nvhealth.database.windows.net:1433;database=nvdb;user=nvadmin;password=Nvhealth23;encrypt=true'});
 const bcrypt = require("bcrypt");
 const duo = require("../services/duo_interface");
 const salt = 10;
