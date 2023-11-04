@@ -8,10 +8,47 @@ datasource db {
 }
 
 model user {
-  userid   Int     @id @default(autoincrement())
-  name     String  @db.Text
-  role     String  @db.Text
-  email    String  @db.Text
-  password String  @db.Text
-  mfa      Boolean
+  userid                                    Int            @id @default(autoincrement())
+  name                                      String         @db.Text
+  role                                      String         @db.Text
+  email                                     String         @db.Text
+  password                                  String         @db.Text
+  mfa                                       Boolean
+  appointments_appointments_doctoridTouser  appointments[] @relation("appointments_doctoridTouser")
+  appointments_appointments_patientidTouser appointments[] @relation("appointments_patientidTouser")
+  doctor                                    doctor?
+  feedback_feedback_doctoridTouser          feedback[]     @relation("feedback_doctoridTouser")
+  feedback_feedback_patientidTouser         feedback[]     @relation("feedback_patientidTouser")
+}
+
+model appointments {
+  doctorid                          Int
+  patientid                         Int
+  date                              DateTime @db.DateTime(0)
+  covid                             Boolean
+  user_appointments_doctoridTouser  user     @relation("appointments_doctoridTouser", fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_1")
+  user_appointments_patientidTouser user     @relation("appointments_patientidTouser", fields: [patientid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_2")
+
+  @@id([doctorid, date])
+  @@index([patientid], map: "patientid")
+}
+
+model doctor {
+  doctorid     Int      @id
+  specialty    String   @db.Text
+  covidsupport Boolean?
+  phone        Int?
+  user         user     @relation(fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "doctor_ibfk_1")
+}
+
+model feedback {
+  patientid                     Int
+  doctorid                      Int
+  written                       String? @db.Text
+  rating                        Int?
+  user_feedback_doctoridTouser  user    @relation("feedback_doctoridTouser", fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_1")
+  user_feedback_patientidTouser user    @relation("feedback_patientidTouser", fields: [patientid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_2")
+
+  @@id([patientid, doctorid])
+  @@index([doctorid], map: "doctorid")
 }

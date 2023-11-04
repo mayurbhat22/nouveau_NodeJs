@@ -24,9 +24,11 @@ app.get("/", (req, res) => {
 //Routes
 const registrationRoutes = require("./routes/registration");
 const loginRoutes = require("./routes/login");
+const searchRoutes = require("./routes/search");
 
 app.use("/registration", registrationRoutes);
 app.use("/login", loginRoutes);
+app.use("/search", searchRoutes);
 
 
 app.listen(PORT, () => {
