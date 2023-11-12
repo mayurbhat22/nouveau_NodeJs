@@ -23,9 +23,11 @@ app.get("/", (req, res) => {
 
 //Routes
 const registrationRoutes = require("./routes/registration");
+const insurancedashboardRoutes = require("./routes/insurance");
 const loginRoutes = require("./routes/login");
 
 app.use("/registration", registrationRoutes);
+app.use("/insurance", insurancedashboardRoutes);
 app.use("/login", loginRoutes);
 
 
