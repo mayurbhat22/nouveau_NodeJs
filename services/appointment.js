@@ -37,7 +37,7 @@ async function getAvailableTimesOnByDoctor(did, day) {
         availableTimes.push(tempDate);
     }
 
-    console.log(availableTimes)
+    //console.log(availableTimes)
     
     for(let i=0; i<appts.length; i++) {
         const currentDate = appts[i].date.toTimeString();
@@ -104,7 +104,7 @@ async function getAllAppointmentsAfterByDoctor(did, day) {
 
 
 async function getAllAppointmentsBeforeByPatient(pid, day) {
-
+    
 }
 
 
@@ -113,8 +113,102 @@ async function getAllAppointmentsAfterByPatient(pid, day) {
 }
 
 
-async function createAppointmentOn(day, pid, did, symptoms) {
+async function getAllAppointmentsOnByPatient(pid, day) {
+    const origHours = day.getHours();
+    day.setHours(0);
+    const appts = await prisma.appointments.findMany({
+        where: {
+            date: {
+                gte: day
+            }, 
+            patientid: pid
+        },
+        orderBy: {
+            date: 'asc'
+        }
+    })
 
+    let apptsfinal = []
+    for(let i=0; i<appts.length; i++) {
+        if(appts[i].date.toDateString() === day.toDateString()) {
+            apptsfinal.push(appts[i])
+        }
+    }
+
+    day.setHours(origHours);
+
+    return appts;
+}
+
+
+async function createAppointmentOn(apptinfo) {
+    const day = new Date(apptinfo.date);
+
+    const availableTimes = await getAvailableTimesOnByDoctor(apptinfo.doctorid, day);
+    
+    let avail = false;
+    for(let i=0; i<availableTimes.length; i++) {
+        if(availableTimes[i].getHours() === day.getHours()) {
+            avail = true;
+        }
+    }
+    if(!avail) {
+        return "Doctor already has an appointment at that time";
+    }
+
+    const patientAppts = await getAllAppointmentsOnByPatient(apptinfo.patientid, day);
+    avail = true;
+    for(let i=0; i<patientAppts.length; i++) {
+        const tempDate = patientAppts[i].date;
+        if(tempDate.toDateString() === day.toDateString() && tempDate.getHours() === day.getHours()) {
+            avail = false;
+        }
+    }
+    if(!avail) {
+        return "Patient already has an appointment at that time"
+    }
+
+    let apptid = -1;
+
+    try {
+        apptid = await prisma.appointments.create({
+            data: {
+                patientid: apptinfo.patientid,
+                doctorid: apptinfo.doctorid,
+                date: day,
+                covidtest: apptinfo.covidtest,
+                symptoms: apptinfo.symptoms
+            }
+        })
+    } catch (error) {
+        apptid = error.message
+        return apptid;
+    }
+
+    return apptid.apptid;
+}
+
+
+async function createCovidForm(apptid, forminfo) {
+    let formid = -1;
+
+    try {
+        formid = await prisma.covidforms.create({
+            data: {
+                apptid: apptid,
+                temp: forminfo.temp,
+                cough: forminfo.cough,
+                breathing: forminfo.breathing,
+                contact: forminfo.contact,
+                travel: forminfo.travel
+            }
+        }) 
+    } catch (error) {
+        formid = error.message
+        return formid;
+    }
+
+    return formid.apptid;
 }
 
 
@@ -126,5 +220,6 @@ module.exports = {
     getAllAppointmentsBeforeByPatient,
     getAllAppointmentsOnByDoctor,
     getAvailableTimesOnByDoctor,
-    createAppointmentOn
+    createAppointmentOn,
+    createCovidForm
 };

@@ -30,7 +30,27 @@ const appointmentGetAvailableTimesPostController = async (req, res) => {
 }
 
 const appointmentBookAppointmentPostController = async (req, res) => {
+    let apptinfo = req.body.appointment;
 
+    const apptid = await appointmentdb.createAppointmentOn(apptinfo);
+
+    if(typeof apptid === "string") {
+        res.status(400);
+        res.send("Error saving appointment: " + apptid);
+        return;
+    }
+
+    let covidform = req.body.covidform;
+
+    const formid = await appointmentdb.createCovidForm(apptid, covidform);
+    if(typeof formid === "string") {
+        res.status(400);
+        res.send("Appointment created successfully but error saving covid symptom survey: " + formid);
+        return;
+    }
+
+    res.json({apptid: apptid})
+    res.send();
 }
 
 
