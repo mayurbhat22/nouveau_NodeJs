@@ -25,16 +25,18 @@ model user {
 }
 
 model appointments {
-  apptid                            Int      @id @default(autoincrement())
+  apptid                            Int         @id @default(autoincrement())
   doctorid                          Int
   patientid                         Int
-  date                              DateTime @db.DateTime(0)
-  symptoms                          String?  @db.Text
-  user_appointments_doctoridTouser  user     @relation("appointments_doctoridTouser", fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_1")
-  user_appointments_patientidTouser user     @relation("appointments_patientidTouser", fields: [patientid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_2")
+  date                              DateTime    @db.DateTime(0)
+  symptoms                          String?     @db.Text
+  covidtest                         Boolean?
+  user_appointments_doctoridTouser  user        @relation("appointments_doctoridTouser", fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_1")
+  user_appointments_patientidTouser user        @relation("appointments_patientidTouser", fields: [patientid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_2")
+  covidforms                        covidforms?
 
-  @@index([doctorid], map: "doctorid")
   @@index([patientid], map: "patientid")
+  @@index([doctorid], map: "doctorid")
 }
 
 model doctor {
@@ -88,4 +90,14 @@ model providerplan {
 
   @@id([insuranceproviderid, planid])
   @@index([planid], map: "planid")
+}
+
+model covidforms {
+  apptid       Int          @id
+  temp         Boolean?
+  cough        Boolean?
+  breathing    Boolean?
+  contact      Boolean?
+  travel       Boolean?
+  appointments appointments @relation(fields: [apptid], references: [apptid], onDelete: NoAction, onUpdate: NoAction, map: "covidforms_ibfk_1")
 }
