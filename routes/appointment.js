@@ -4,7 +4,7 @@ const router = express.Router();
 const {
     appointmentBookAppointmentPostController,
     appointmentGetAvailableTimesPostController,
-    appointmentGetUnavailableDaysPostController
+    appointmentGetUnavailableDaysPostController,
 } = require("../controllers/appointment");
 
 router.post("/", appointmentGetUnavailableDaysPostController);

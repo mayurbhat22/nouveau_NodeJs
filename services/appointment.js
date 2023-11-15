@@ -1,9 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const doctordb = require("./doctor");
 
 
+// gives all days where a doctor is fully booked
 async function getUnavailableDaysAfter(did, day) {
-    const appts = await getAllAppointmentsAfterByDoctor(did, day);
+    const appts = await getAllAppointmentsAfterNotIncludingByDoctor(did, day);
     //console.log(appts);
 
     const apptMap = new Map();
@@ -27,59 +29,8 @@ async function getUnavailableDaysAfter(did, day) {
 }
 
 
-async function getAvailableTimesOnByDoctor(did, day) {
-    const appts = await getAllAppointmentsOnByDoctor(did, day);
-
-    const availableTimes = []
-    for(let i=0; i<8; i++) {
-        const tempDate = new Date("2023-11-17T09:00:00.000-05:00");
-        tempDate.setHours(tempDate.getHours()+i);
-        availableTimes.push(tempDate);
-    }
-
-    //console.log(availableTimes)
-    
-    for(let i=0; i<appts.length; i++) {
-        const currentDate = appts[i].date.toTimeString();
-        for(let j=0; j<availableTimes.length; j++) {
-            if(currentDate === availableTimes[j].toTimeString()) {
-                availableTimes.splice(j, 1);
-                break;
-            }
-        }
-    }
-
-
-    return availableTimes;
-}
-
-
-async function getAllAppointmentsOnByDoctor(did, day) {
-    const appts = await prisma.appointments.findMany({
-        where: {
-            doctorid: did
-        }
-    })
-
-    const todayAppts = []
-    for(let i=0; i<appts.length; i++) {
-        if(day.toDateString() === appts[i].date.toDateString()) {
-            todayAppts.push(appts[i]);
-        }
-    }
-
-    //console.log(todayAppts);
-
-    return todayAppts;
-}
-
-
-async function getAllAppointmentsBeforeByDoctor(did, day) {
-    
-}
-
-
-async function getAllAppointmentsAfterByDoctor(did, day) {
+// gives all appointments after a specific day, excluding any appointments on that day
+async function getAllAppointmentsAfterNotIncludingByDoctor(did, day) {
     const appts = await prisma.appointments.findMany({
         where: {
             date: {
@@ -103,16 +54,129 @@ async function getAllAppointmentsAfterByDoctor(did, day) {
 }
 
 
-async function getAllAppointmentsBeforeByPatient(pid, day) {
+// gives all times (as part of dates) where the doctor does not have an appointment on a given day
+async function getAvailableTimesOnByDoctor(did, day) {
+    const appts = await getAllAppointmentsOnByDoctor(did, day);
+
+    const availableTimes = []
+    for(let i=0; i<8; i++) {
+        const tempDate = new Date("2023-11-17T09:00:00.000-05:00");
+        tempDate.setHours(tempDate.getHours()+i);
+        availableTimes.push(tempDate);
+    }
+
+    //console.log(availableTimes)
     
+    for(let i=0; i<appts.length; i++) {
+        const currentDate = appts[i].date.toTimeString();
+        for(let j=0; j<availableTimes.length; j++) {
+            if(currentDate === availableTimes[j].toTimeString()) {
+                availableTimes.splice(j, 1);
+                break;
+            }
+        }
+    }
+
+    
+    return availableTimes;
 }
 
 
+// gives all appointments on a specific day, ignoring the time
+async function getAllAppointmentsOnByDoctor(did, day) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            doctorid: did
+        }
+    })
+
+    const todayAppts = []
+    for(let i=0; i<appts.length; i++) {
+        if(day.toDateString() === appts[i].date.toDateString()) {
+            todayAppts.push(appts[i]);
+        }
+    }
+
+    //console.log(todayAppts);
+
+    return todayAppts;
+}
+
+
+// gives all appointments before and not including a specific date and time (so if the entered time is 12:00 on Nov 11, it will give all appointments from Nov 11 at 11:00 and before)
+async function getAllAppointmentsBeforeByDoctor(did, day) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            date: {
+                lt: day
+            }, 
+            doctorid: did
+        },
+        orderBy: {
+            date: 'asc'
+        }
+    })
+
+    return appts;
+}
+
+
+// gives all appointments before and not including a specific date and time (so if the entered time is 12:00 on Nov 11, it will give all appointments from Nov 11 at 11:00 and before)
+async function getAllAppointmentsBeforeByPatient(pid, day) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            date: {
+                lt: day
+            }, 
+            patientid: pid
+        },
+        orderBy: {
+            date: 'asc'
+        }
+    })
+
+    return appts;
+}
+
+
+
+// gives all appointments after and including a specific date and time (so if the entered time is 12:00 on Nov 11, it will give all appointments from Nov 11 at 12:00 and after)
+async function getAllAppointmentsAfterByDoctor(did, day) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            date: {
+                gte: day
+            }, 
+            doctorid: did
+        },
+        orderBy: {
+            date: 'asc'
+        }
+    })
+
+    return appts;
+}
+
+
+// gives all appointments after and including a specific date and time (so if the entered time is 12:00 on Nov 11, it will give all appointments from Nov 11 at 12:00 and after)
 async function getAllAppointmentsAfterByPatient(pid, day) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            date: {
+                gte: day
+            }, 
+            patientid: pid
+        },
+        orderBy: {
+            date: 'asc'
+        }
+    })
 
+    return appts;
 }
 
 
+// gives all appointments on a specific day, ignoring the time
 async function getAllAppointmentsOnByPatient(pid, day) {
     const origHours = day.getHours();
     day.setHours(0);
@@ -141,6 +205,105 @@ async function getAllAppointmentsOnByPatient(pid, day) {
 }
 
 
+// INCOMPLETE - NEED COMPLETED PATIENT PROFILES
+// gets all patients for a given doctor that they have had an appointment with before the given date and time (will probably always be current date and time, but will leave it open just in case), not inclusive
+async function getAllPatientsUpToPresent(did, day) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            date: {
+                lt: day
+            }, 
+            doctorid: did
+        },
+        orderBy: {
+            date: 'asc'
+        },
+        distinct: ['patientid']
+    })
+
+    const profiles = [];
+    for(let i=0; i<appts.length; i++) {
+        //const prof = await doctordb.getDoctorProfileById(appts[i].doctorid)
+        //profiles.push(prof);
+        profiles.push(appts[i].patientid);
+    }
+
+    return profiles;
+}
+
+
+// INCOMPLETE - NEED COMPLETED PATIENT PROFILES
+// gets all patients for a given doctor that they have had an appointment with or have an appointment scheduled with
+async function getAllPatientsAllTime(did) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            doctorid: did
+        },
+        orderBy: {
+            date: 'asc'
+        },
+        distinct: ['patientid']
+    })
+
+    const profiles = [];
+    for(let i=0; i<appts.length; i++) {
+        //const prof = await doctordb.getDoctorProfileById(appts[i].doctorid)
+        //profiles.push(prof);
+        profiles.push(appts[i].patientid);
+    }
+
+    return profiles;
+}
+
+
+// gets all doctors for a given patient that they have had an appointment with before the given date and time (will probably always be current date and time, but will leave it open just in case), not inclusive
+async function getAllDoctorsUpToPresent(pid, day) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            date: {
+                lt: day
+            }, 
+            patientid: pid
+        },
+        orderBy: {
+            date: 'asc'
+        },
+        distinct: ['doctorid']
+    })
+
+    const profiles = [];
+    for(let i=0; i<appts.length; i++) {
+        const prof = await doctordb.getDoctorProfileById(appts[i].doctorid)
+        profiles.push(prof);
+    }
+
+    return profiles;
+}
+
+
+// gets all doctors for a given patient that they have had an appointment with or have an appointment scheduled with
+async function getAllDoctorsAllTime(pid) {
+    const appts = await prisma.appointments.findMany({
+        where: {
+            patientid: pid
+        },
+        orderBy: {
+            date: 'asc'
+        },
+        distinct: ['doctorid']
+    })
+
+    const profiles = [];
+    for(let i=0; i<appts.length; i++) {
+        const prof = await doctordb.getDoctorProfileById(appts[i].doctorid)
+        profiles.push(prof);
+    }
+
+    return profiles;
+}
+
+
+// creates appointment using information that is passed to it
 async function createAppointmentOn(apptinfo) {
     const day = new Date(apptinfo.date);
 
@@ -189,6 +352,7 @@ async function createAppointmentOn(apptinfo) {
 }
 
 
+// creates a covid form associated with the given appointment using the information provided
 async function createCovidForm(apptid, forminfo) {
     let formid = -1;
 
@@ -215,11 +379,16 @@ async function createCovidForm(apptid, forminfo) {
 module.exports = {
     getUnavailableDaysAfter,
     getAllAppointmentsAfterByDoctor,
+    getAllAppointmentsAfterNotIncludingByDoctor,
     getAllAppointmentsAfterByPatient,
     getAllAppointmentsBeforeByDoctor,
     getAllAppointmentsBeforeByPatient,
     getAllAppointmentsOnByDoctor,
     getAvailableTimesOnByDoctor,
+    getAllDoctorsAllTime,
+    getAllDoctorsUpToPresent,
+    getAllPatientsAllTime,
+    getAllPatientsUpToPresent,
     createAppointmentOn,
     createCovidForm
 };
