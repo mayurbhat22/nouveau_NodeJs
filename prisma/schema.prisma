@@ -8,10 +8,96 @@ datasource db {
 }
 
 model user {
-  userid   Int     @id @default(autoincrement())
-  name     String  @db.Text
-  role     String  @db.Text
-  email    String  @db.Text
-  password String  @db.Text
-  mfa      Boolean
+  userid                                                      Int                @id @default(autoincrement())
+  name                                                        String             @db.Text
+  role                                                        String             @db.Text
+  email                                                       String             @db.Text
+  password                                                    String             @db.Text
+  mfa                                                         Boolean
+  appointments_appointments_doctoridTouser                    appointments[]     @relation("appointments_doctoridTouser")
+  appointments_appointments_patientidTouser                   appointments[]     @relation("appointments_patientidTouser")
+  doctor                                                      doctor?
+  feedback_feedback_doctoridTouser                            feedback[]         @relation("feedback_doctoridTouser")
+  feedback_feedback_patientidTouser                           feedback[]         @relation("feedback_patientidTouser")
+  patientinsurance_patientinsurance_patientidTouser           patientinsurance?  @relation("patientinsurance_patientidTouser")
+  patientinsurance_patientinsurance_insuranceprovideridTouser patientinsurance[] @relation("patientinsurance_insuranceprovideridTouser")
+  providerplan                                                providerplan[]
+}
+
+model appointments {
+  apptid                            Int         @id @default(autoincrement())
+  doctorid                          Int
+  patientid                         Int
+  date                              DateTime    @db.DateTime(0)
+  symptoms                          String?     @db.Text
+  covidtest                         Boolean?
+  user_appointments_doctoridTouser  user        @relation("appointments_doctoridTouser", fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_1")
+  user_appointments_patientidTouser user        @relation("appointments_patientidTouser", fields: [patientid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_2")
+  covidforms                        covidforms?
+
+  @@index([patientid], map: "patientid")
+  @@index([doctorid], map: "doctorid")
+}
+
+model doctor {
+  doctorid     Int      @id
+  specialty    String   @db.Text
+  covidsupport Boolean?
+  phone        Int?
+  user         user     @relation(fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "doctor_ibfk_1")
+}
+
+model feedback {
+  patientid                     Int
+  doctorid                      Int
+  written                       String? @db.Text
+  rating                        Int?
+  user_feedback_doctoridTouser  user    @relation("feedback_doctoridTouser", fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_1")
+  user_feedback_patientidTouser user    @relation("feedback_patientidTouser", fields: [patientid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "feedback_ibfk_2")
+
+  @@id([patientid, doctorid])
+  @@index([doctorid], map: "doctorid")
+}
+
+model patientinsurance {
+  patientid                                       Int  @id
+  insuranceproviderid                             Int
+  planid                                          Int
+  user_patientinsurance_patientidTouser           user @relation("patientinsurance_patientidTouser", fields: [patientid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "patientinsurance_ibfk_1")
+  user_patientinsurance_insuranceprovideridTouser user @relation("patientinsurance_insuranceprovideridTouser", fields: [insuranceproviderid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "patientinsurance_ibfk_2")
+  plan                                            plan @relation(fields: [planid], references: [planid], onDelete: NoAction, onUpdate: NoAction, map: "patientinsurance_ibfk_3")
+
+  @@index([insuranceproviderid], map: "insuranceproviderid")
+  @@index([planid], map: "planid")
+}
+
+model plan {
+  planid           Int                @id @default(autoincrement())
+  name             String             @db.Text
+  monthlyrate      Float              @db.Float
+  deductible       Float              @db.Float
+  physiciancopay   Float?             @db.Float
+  pharmacopay      Float?             @db.Float
+  patientinsurance patientinsurance[]
+  providerplan     providerplan[]
+}
+
+model providerplan {
+  insuranceproviderid Int
+  planid              Int
+  user                user @relation(fields: [insuranceproviderid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "providerplan_ibfk_1")
+  plan                plan @relation(fields: [planid], references: [planid], onDelete: NoAction, onUpdate: NoAction, map: "providerplan_ibfk_2")
+
+  @@id([insuranceproviderid, planid])
+  @@index([planid], map: "planid")
+}
+
+model covidforms {
+  apptid       Int          @id
+  temp         Boolean?
+  cough        Boolean?
+  breathing    Boolean?
+  contact      Boolean?
+  travel       Boolean?
+  appointments appointments @relation(fields: [apptid], references: [apptid], onDelete: NoAction, onUpdate: NoAction, map: "covidforms_ibfk_1")
 }

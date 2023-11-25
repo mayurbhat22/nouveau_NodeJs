@@ -23,10 +23,16 @@ app.get("/", (req, res) => {
 
 //Routes
 const registrationRoutes = require("./routes/registration");
+const insurancedashboardRoutes = require("./routes/insurance");
 const loginRoutes = require("./routes/login");
+const searchRoutes = require("./routes/search");
+const appointmentRoutes = require("./routes/appointment");
 
 app.use("/registration", registrationRoutes);
+app.use("/insurance", insurancedashboardRoutes);
 app.use("/login", loginRoutes);
+app.use("/search", searchRoutes);
+app.use("/appointment", appointmentRoutes);
 
 
 app.listen(PORT, () => {
