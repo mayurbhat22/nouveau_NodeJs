@@ -27,16 +27,10 @@ const loginPostController = async (req, res) => {
       res.send("Incorrect Password");
       return;
     }
-  
-    var responseBody = {
-        userid: user.userid,
-        mfa: user.mfa,
-        role: user.role
-    }
 
     if (user.mfa == false) {
         res.status(200);
-        res.json(responseBody)
+        res.json(user)
         res.send();
         return;
     }
@@ -45,9 +39,11 @@ const loginPostController = async (req, res) => {
         res.statusCode = statusCode;
         res.statusMessage = statusMessage;
         if(!error) {
-            body['userid'] = responseBody.userid
-            body['mfa'] = responseBody.mfa
-            body['role'] = responseBody.role
+            body['userid'] = user.userid
+            body['name'] = user.name
+            body['email'] = user.email
+            body['mfa'] = user.mfa
+            body['role'] = user.role
             res.json(body)
             res.send()
         } else {
