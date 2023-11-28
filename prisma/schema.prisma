@@ -101,3 +101,5 @@ model covidforms {
   travel       Boolean?
   appointments appointments @relation(fields: [apptid], references: [apptid], onDelete: NoAction, onUpdate: NoAction, map: "covidforms_ibfk_1")
 }
+
+
