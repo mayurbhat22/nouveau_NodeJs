@@ -27,12 +27,16 @@ const insurancedashboardRoutes = require("./routes/insurance");
 const loginRoutes = require("./routes/login");
 const searchRoutes = require("./routes/search");
 const appointmentRoutes = require("./routes/appointment");
+const patienthomeRoutes = require("./routes/patient");
+const doctorhomeRoutes = require("./routes/doctor");
 
 app.use("/registration", registrationRoutes);
 app.use("/insurance", insurancedashboardRoutes);
 app.use("/login", loginRoutes);
 app.use("/search", searchRoutes);
 app.use("/appointment", appointmentRoutes);
+app.use("/patient", patienthomeRoutes);
+app.use("/doctor", doctorhomeRoutes);
 
 
 app.listen(PORT, () => {
