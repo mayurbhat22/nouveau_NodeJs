@@ -7,7 +7,7 @@ const salt = 10;
 // Attempt to log user in - Check if the email exists and that the password is correct
 // body - json with fields email, password, and role
 // return - if unsuccessful, appropriate error message, otherwise the id and mfa status of the user who just logged in
-//          if the mfa status is true, then perform preauthentication and add the
+//        if the mfa status is true, then perform preauthentication and add the
 const loginPostController = async (req, res) => {
   const body = req.body;
 
