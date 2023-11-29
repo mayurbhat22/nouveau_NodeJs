@@ -150,6 +150,7 @@ const patienthomeRoutes = require("./routes/patient");
 const doctorhomeRoutes = require("./routes/doctor");
 const patientDetailsRoutes = require("./routes/patientDetails");
 
+
 app.use("/registration", registrationRoutes);
 app.use("/insurance", insurancedashboardRoutes);
 app.use("/login", loginRoutes);
@@ -158,6 +159,7 @@ app.use("/appointment", appointmentRoutes);
 app.use("/patient", patienthomeRoutes);
 app.use("/doctor", doctorhomeRoutes);
 app.use("/doctordashboard", patientDetailsRoutes);
+
 
 app.get("/", (req, res) => {
   res.json({ message: "Good evening" });
