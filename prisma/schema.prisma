@@ -43,7 +43,7 @@ model doctor {
   doctorid     Int      @id
   specialty    String   @db.Text
   covidsupport Boolean?
-  phone        Int?
+  phone        BigInt?
   user         user     @relation(fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "doctor_ibfk_1")
 }
 
@@ -101,5 +101,3 @@ model covidforms {
   travel       Boolean?
   appointments appointments @relation(fields: [apptid], references: [apptid], onDelete: NoAction, onUpdate: NoAction, map: "covidforms_ibfk_1")
 }
-
-

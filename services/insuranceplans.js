@@ -27,13 +27,6 @@ async function getPlanByPatient(patientid) {
 
   if (patientplan === null) return patientplan;
 
-  const plan = await prisma.plan.findFirst({
-    where: { planid: patientplan.patientid },
-  });
-
-  return plan;
-}
-
 async function getPlanById(planid) {
   const plan = await prisma.plan.findFirst({
     where: { planid: planid },
