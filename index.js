@@ -23,7 +23,7 @@ app.use(express.json());
 const httpServer = createServer(app); // Create HTTP server using express app
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://nouveauhealth.azurewebsites.net/",
     methods: ["GET", "POST"],
   },
 });
