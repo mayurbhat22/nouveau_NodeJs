@@ -149,6 +149,7 @@ const appointmentRoutes = require("./routes/appointment");
 const patienthomeRoutes = require("./routes/patient");
 const doctorhomeRoutes = require("./routes/doctor");
 const patientDetailsRoutes = require("./routes/patientDetails");
+const profileRoutes = require("./routes/profile")
 
 
 app.use("/registration", registrationRoutes);
@@ -159,6 +160,7 @@ app.use("/appointment", appointmentRoutes);
 app.use("/patient", patienthomeRoutes);
 app.use("/doctor", doctorhomeRoutes);
 app.use("/doctordashboard", patientDetailsRoutes);
+app.use("/profile", profileRoutes);
 
 
 app.get("/", (req, res) => {

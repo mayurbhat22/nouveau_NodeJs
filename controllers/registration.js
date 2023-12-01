@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const duo = require("../services/duo_interface");
+const doctordb = require("../services/doctor")
 const salt = 10;
 
 // Determine if there is already a user for the entered email
@@ -31,6 +32,16 @@ const registrationPostContoller = async (req, res) => {
       mfa: body.mfa,
     },
   });
+
+
+  /*
+
+  Doctors will be added to doctor table once they update their profile - keeps them from showing up in searches until they have valid info
+
+  if(user.role === 'doctor') {
+    doctordb.addNewDoctor(user.userid);
+  }
+  */
 
 
   res.json({userid: user.userid});
