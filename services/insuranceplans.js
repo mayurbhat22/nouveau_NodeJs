@@ -131,4 +131,3 @@ module.exports = {
   getPlanByPatient,
   getPlanByPatientIdWithProviderInfo,
 };
-//testing something
