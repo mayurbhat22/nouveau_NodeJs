@@ -35,20 +35,21 @@ const loginPostController = async (req, res) => {
     return;
   }
 
-  const callback = (body, statusCode, statusMessage, error = false) => {
-    res.statusCode = statusCode;
-    res.statusMessage = statusMessage;
-    if (!error) {
-      body["userid"] = user.userid;
-      body["name"] = user.name;
-      body["email"] = user.email;
-      body["mfa"] = user.mfa;
-      body["role"] = user.role;
-      res.json(body);
-      res.send();
-    } else {
+  const callback = (body, statusCode, statusMessage, error=false) => {
+      res.statusCode = statusCode;
+      res.statusMessage = statusMessage;
+      if(!error) {
+          body['userid'] = user.userid
+          body['name'] = user.name
+          body['email'] = user.email
+          body['mfa'] = user.mfa
+          body['role'] = user.role
+          res.json(body)
+          res.send()
+      } else {
+
+      }
     }
-  };
 
   duo.preauth(user.userid, callback);
 };

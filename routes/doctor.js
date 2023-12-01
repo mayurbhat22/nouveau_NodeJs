@@ -8,4 +8,5 @@ const {
 
 //router.post("/patients", doctorPatientsPostController);
 router.post("/upcoming", doctorUpcomingApptsPostController);
+
 module.exports = router;
