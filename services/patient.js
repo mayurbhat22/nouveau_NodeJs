@@ -15,23 +15,6 @@ async function getAllPatients() {
 }
 
 async function getAppointmentDetailsofPatients() {
-  //   const patientAppointments = await prisma.user.findMany({
-  //     where: {
-  //       role: "Patient",
-  //     },
-  //     select: {
-  //       userid: true,
-  //       appointments_appointments_patientidTouser: {
-  //         select: {
-  //           apptid: true,
-  //           doctorid: true,
-  //           date: true,
-  //           symptoms: true,
-  //           covidtest: true,
-  //         },
-  //       },
-  //     },
-  //   });
   const appointmentsWithPatients = await prisma.$queryRaw`
   SELECT *
   FROM Nouveau.appointments a
