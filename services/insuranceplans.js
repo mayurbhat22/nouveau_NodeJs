@@ -21,19 +21,11 @@ async function getAllPlansByProvider(providerid) {
 }
 
 async function getPlanByPatient(patientid) {
-    const patientplan = await prisma.patientinsurance.findFirst({
-        where: { patientid: patientid }
-    })
+  const patientplan = await prisma.patientinsurance.findFirst({
+    where: { patientid: patientid },
+  });
 
-    if(patientplan === null)
-        return patientplan;
-
-    const plan = await prisma.plan.findFirst({
-        where: { planid: patientplan.patientid}
-    })
-
-    return plan;
-}
+  if (patientplan === null) return patientplan;
 
   const plan = await prisma.plan.findFirst({
     where: { planid: patientplan.patientid },
@@ -43,44 +35,42 @@ async function getPlanByPatient(patientid) {
 }
 
 async function getPlanById(planid) {
-    const plan = await prisma.plan.findFirst({
-        where: { planid: planid }
-    })
-    
+  const plan = await prisma.plan.findFirst({
+    where: { planid: planid },
+  });
+
   return plan;
 }
 
 // get plan info along with provider name and id
 async function getPlanByPatientIdWithProviderInfo(patientid) {
-    const patientplan = await prisma.patientinsurance.findFirst({
-        where: { patientid: patientid }
-    })
+  const patientplan = await prisma.patientinsurance.findFirst({
+    where: { patientid: patientid },
+  });
 
-    if(patientplan === null)
-        return patientplan;
+  if (patientplan === null) return patientplan;
 
-    const plan = await prisma.plan.findFirst({
-        where: { planid: patientplan.patientid}
-    })
+  const plan = await prisma.plan.findFirst({
+    where: { planid: patientplan.patientid },
+  });
 
-    const provider = await prisma.user.findFirst({
-        where: { userid: patientplan.insuranceproviderid}
-    })
+  const provider = await prisma.user.findFirst({
+    where: { userid: patientplan.insuranceproviderid },
+  });
 
-    plan['providerid'] = provider.userid
-    plan['providername'] = provider.name
+  plan["providerid"] = provider.userid;
+  plan["providername"] = provider.name;
 
-    return plan;
+  return plan;
 }
 
-
 async function getAllPatientIdsByProvider(providerid) {
-    const ids = await prisma.patientinsurance.findMany({
-        where: { insuranceproviderid: providerid},
-        select: {
-            patientid: true,
-        }
-    });
+  const ids = await prisma.patientinsurance.findMany({
+    where: { insuranceproviderid: providerid },
+    select: {
+      patientid: true,
+    },
+  });
 
   if (patientplan === null) return patientplan;
 
@@ -158,10 +148,10 @@ async function getAllPatientsAndPlansBasicByProvider(providerid) {
 }
 
 module.exports = {
-    getAllPatientIdsByProvider,
-    getAllPatientsAndPlansBasicByProvider,
-    getAllPlansByProvider,
-    getPlanById,
-    getPlanByPatient,
-    getPlanByPatientIdWithProviderInfo
+  getAllPatientIdsByProvider,
+  getAllPatientsAndPlansBasicByProvider,
+  getAllPlansByProvider,
+  getPlanById,
+  getPlanByPatient,
+  getPlanByPatientIdWithProviderInfo,
 };
