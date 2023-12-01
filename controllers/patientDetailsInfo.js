@@ -1,12 +1,10 @@
 const patientDb = require("../services/patient");
 
-const appointmentDetailsPostController = async (req, res) => {
-  const body = req.body;
-
+const appointmentDetailsInfoPostController = async (req, res) => {
   const appointmentsData = await patientDb.getAppointmentDetailsofPatients();
 
   const filteredAppointments = appointmentsData.filter(
-    (appointment) => appointment.doctorid === body.doctorID
+    (appointment) => appointment.doctorid == req.params.doctorID
   );
 
   const groupedAppointments = filteredAppointments.reduce(
@@ -23,19 +21,18 @@ const appointmentDetailsPostController = async (req, res) => {
     },
     {}
   );
-  const patientDetails = [];
-  for (const patientId in groupedAppointments) {
-    if (Object.hasOwnProperty.call(groupedAppointments, patientId)) {
-      const appointmentsForPatient = groupedAppointments[patientId];
-      const patientName = appointmentsForPatient[0]?.name;
 
-      patientDetails.push({ ID: patientId, patientName: patientName });
+  const patientDetailsInfo = [];
+  for (const patientId in groupedAppointments) {
+    if (patientId == req.params.patientID) {
+      patientDetailsInfo.push(groupedAppointments[patientId]);
     }
   }
-  res.json(patientDetails);
+
+  res.json(patientDetailsInfo);
   res.send();
 };
 
 module.exports = {
-  appointmentDetailsPostController,
+  appointmentDetailsInfoPostController,
 };

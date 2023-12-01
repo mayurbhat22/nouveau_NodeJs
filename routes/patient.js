@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    patientDoctorsPostController,
-    patientUpcomingApptsPostController,
-    patientPlanPostController
+  patientDoctorsPostController,
+  patientUpcomingApptsPostController,
+  patientPlanPostController,
 } = require("../controllers/patient");
 
 router.post("/doctors", patientDoctorsPostController);

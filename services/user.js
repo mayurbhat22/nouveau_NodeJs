@@ -4,13 +4,13 @@ const bcrypt = require("bcrypt");
 const salt = 10;
 
 async function getUserById(userid) {
-    const user = await prisma.user.findFirst({
-        where: {
-            userid: userid
-        }
-    })
+  const user = await prisma.user.findFirst({
+    where: {
+      userid: userid,
+    },
+  });
 
-    return user;
+  return user;
 }
 
 
@@ -21,7 +21,7 @@ async function getUserByEmail(email) {
         }
     })
 
-    return user;
+  return user;
 }
 
 
@@ -73,7 +73,7 @@ async function updateUser(inuser) {
 }
 
 module.exports = {
-    getUserById,
+  getUserById,
     getUserByEmail,
-    updateUser
-}
+    updateUser,
+};
