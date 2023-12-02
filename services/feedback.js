@@ -35,8 +35,37 @@ async function getAverageFeedbackByDoctorId(id) {
 }
 
 
+async function postFeedback(feedback){
+    const givenFeedback = await getFeedbackByDoctorIdAndPatientId(feedback.doctorid, feedback.patientid);
+
+    // replace old feedback if it exists
+    if (givenFeedback !== null) {
+        const oldFeedback = await prisma.feedback.delete({
+            where: { 
+                patientid_doctorid: {
+                    patientid:  feedback.patientid,
+                    doctorid: feedback.doctorid,
+                }
+            }
+        })
+    }
+
+    const newfeedback = await prisma.feedback.create({
+        data: {
+            doctorid: feedback.doctorid,
+            patientid: feedback.patientid,
+            rating: feedback.rating,
+            written: feedback.written
+        }
+    })
+
+    return newfeedback
+}
+
+
 module.exports = {
     getFeedbackByDoctorId,
     getFeedbackByDoctorIdAndPatientId,
-    getAverageFeedbackByDoctorId
+    getAverageFeedbackByDoctorId,
+    postFeedback
 };

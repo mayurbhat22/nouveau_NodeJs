@@ -43,7 +43,7 @@ model doctor {
   doctorid     Int      @id
   specialty    String   @db.Text
   covidsupport Boolean?
-  phone        Int?
+  phone        BigInt?
   user         user     @relation(fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "doctor_ibfk_1")
 }
 
