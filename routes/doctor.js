@@ -4,9 +4,15 @@ const router = express.Router();
 const {
   //doctorPatientsPostController,
   doctorUpcomingApptsPostController,
+  appointmentDetailsPostController,
+  appointmentDetailsInfoPostController,
 } = require("../controllers/doctor");
 
 //router.post("/patients", doctorPatientsPostController);
 router.post("/upcoming", doctorUpcomingApptsPostController);
-
+router.post("/patientdetails", appointmentDetailsPostController);
+router.post(
+  "/patientdetails/patientdetailsInfo/:patientID/:doctorID",
+  appointmentDetailsInfoPostController
+);
 module.exports = router;

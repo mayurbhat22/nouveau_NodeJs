@@ -109,6 +109,12 @@ const loginGoogleAuth = async (req, res) => {
     audience: CLIENT_ID,
   });
   const payload = ticket.getPayload();
+  console.log(payload.email);
+
+  const user = await prisma.user.findFirst({
+    where: { email: payload.email },
+  });
+
   const userid = payload["sub"];
 
   // First check whether the user through Google Auth has Signed up.
@@ -128,17 +134,26 @@ const loginGoogleAuth = async (req, res) => {
           data: {
             name: payload.name,
             email: payload.email,
-            role: "User",
+            role: body.roleName,
             password: "Mayur",
-            mfa: true,
+            mfa: false,
           },
         }).then((response) => {
           console.log("Registration response:", response.data);
           res.cookie("session-token", token);
-          res.status(200).send("Success");
+          body["userid"] = response.data.userid;
+          body["name"] = payload.name;
+          body["email"] = payload.email;
+          body["role"] = body.roleName;
+          res.json(body);
         });
       } else {
-        res.status(200).send("Success");
+        body["userid"] = user.userid;
+        body["name"] = user.name;
+        body["email"] = user.email;
+        body["mfa"] = user.mfa;
+        body["role"] = user.role;
+        res.json(body);
       }
     },
     (error) => {

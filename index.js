@@ -23,7 +23,7 @@ app.use(express.json());
 const httpServer = createServer(app); // Create HTTP server using express app
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://nouveauhealth.azurewebsites.net/",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -148,8 +148,7 @@ const searchRoutes = require("./routes/search");
 const appointmentRoutes = require("./routes/appointment");
 const patienthomeRoutes = require("./routes/patient");
 const doctorhomeRoutes = require("./routes/doctor");
-const patientDetailsRoutes = require("./routes/patientDetails");
-
+// const patientDetailsRoutes = require("./routes/patientDetails");
 
 app.use("/registration", registrationRoutes);
 app.use("/insurance", insurancedashboardRoutes);
@@ -158,8 +157,7 @@ app.use("/search", searchRoutes);
 app.use("/appointment", appointmentRoutes);
 app.use("/patient", patienthomeRoutes);
 app.use("/doctor", doctorhomeRoutes);
-app.use("/doctordashboard", patientDetailsRoutes);
-
+// app.use("/doctordashboard", patientDetailsRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Good evening" });
