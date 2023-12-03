@@ -6,6 +6,10 @@ const {
   doctorUpcomingApptsPostController,
   appointmentDetailsPostController,
   appointmentDetailsInfoPostController,
+  //doctorPatientsPostController,
+  doctorUpcomingApptsPostController,
+  doctorGetDetailsController,
+  doctorLeaveFeedbackPostController,
 } = require("../controllers/doctor");
 
 //router.post("/patients", doctorPatientsPostController);
@@ -15,4 +19,7 @@ router.post(
   "/patientdetails/patientdetailsInfo/:patientID/:doctorID",
   appointmentDetailsInfoPostController
 );
+router.post("/details", doctorGetDetailsController);
+router.post("/feedback", doctorLeaveFeedbackPostController);
+
 module.exports = router;

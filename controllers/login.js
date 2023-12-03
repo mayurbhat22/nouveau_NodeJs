@@ -16,9 +16,15 @@ let REGISTRATION_URL = "http://localhost:8080/registration";
 const loginPostController = async (req, res) => {
   const body = req.body;
 
-  const user = await prisma.user.findFirst({
-    where: { email: body.email },
+  const users = await prisma.user.findMany({
   });
+
+  let user = null;
+  for (let i=0; i<users.length; i++) {
+    if (users[i].email === body.email) {
+        user = users[i];
+    }
+  }
 
   if (user == null) {
     res.status(400);
