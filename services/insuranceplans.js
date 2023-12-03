@@ -182,11 +182,15 @@ async function getAllPlansWithProviderInfo() {
 
 
 async function getAllPlansGroupedByProvider() {
-    const providerids = await prisma.user.findMany({
-        where: {
-            role: 'insurance'
-        }
+    const users = await prisma.user.findMany({
     })
+
+    const providerids = []
+    for (let i=0; i<users.length; i++) {
+        if (users[i].role === 'insurance') {
+            providerids.push(users[i]);
+        }
+    }
 
     const providerPlans = []
 
@@ -276,6 +280,12 @@ async function deleteInsuranceplan(planid, providerid) {
 
 
     const deletedRel = await prisma.providerplan.deleteMany({
+        where: {
+            planid: planid
+        }
+    })
+
+    const deletedPat = await prisma.patientinsurance.deleteMany({
         where: {
             planid: planid
         }

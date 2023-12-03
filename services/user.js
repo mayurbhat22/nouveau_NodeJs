@@ -15,13 +15,16 @@ async function getUserById(userid) {
 
 
 async function getUserByEmail(email) {
-    const user = await prisma.user.findFirst({
-        where: {
-            email: email
-        }
+    const users = await prisma.user.findMany({
     })
 
-  return user;
+    for (let i=0; i<users.length; i++) {
+        if (users[i].email === email) {
+            return users[i];
+        }
+    }
+
+  return null;
 }
 
 
