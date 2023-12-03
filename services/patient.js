@@ -1,18 +1,18 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-async function getAllPatients() {
-  const allPatientIds = await prisma.user.findMany({
-    where: {
-      role: "Patient",
-    },
-    select: {
-      userid: true,
-    },
-  });
+// async function getAllPatients() {
+//   const allPatientIds = await prisma.user.findMany({
+//     where: {
+//       role: "Patient",
+//     },
+//     select: {
+//       userid: true,
+//     },
+//   });
 
-  return allPatientIds.map((patient) => patient.userid);
-}
+//   return allPatientIds.map((patient) => patient.userid);
+// }
 
 async function getAppointmentDetailsofPatients() {
   const appointmentsWithPatients = await prisma.$queryRaw`

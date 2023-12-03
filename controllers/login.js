@@ -16,13 +16,12 @@ let REGISTRATION_URL = "http://localhost:8080/registration";
 const loginPostController = async (req, res) => {
   const body = req.body;
 
-  const users = await prisma.user.findMany({
-  });
+  const users = await prisma.user.findMany({});
 
   let user = null;
-  for (let i=0; i<users.length; i++) {
+  for (let i = 0; i < users.length; i++) {
     if (users[i].email === body.email) {
-        user = users[i];
+      user = users[i];
     }
   }
 
@@ -117,9 +116,14 @@ const loginGoogleAuth = async (req, res) => {
   const payload = ticket.getPayload();
   console.log(payload.email);
 
-  const user = await prisma.user.findFirst({
-    where: { email: payload.email },
-  });
+  const users = await prisma.user.findMany({});
+
+  let user = null;
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].email === payload.email) {
+      user = users[i];
+    }
+  }
 
   const userid = payload["sub"];
 

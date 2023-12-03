@@ -6,8 +6,6 @@ const {
   doctorUpcomingApptsPostController,
   appointmentDetailsPostController,
   appointmentDetailsInfoPostController,
-  //doctorPatientsPostController,
-  doctorUpcomingApptsPostController,
   doctorGetDetailsController,
   doctorLeaveFeedbackPostController,
 } = require("../controllers/doctor");
