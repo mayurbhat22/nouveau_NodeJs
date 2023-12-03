@@ -18,7 +18,7 @@ const {
 const app = express();
 const PORT = 8080;
 // Attach Express app to the HTTP server
-app.use(cors({ origin: "https://nouveauhealth.azurewebsites.net/" }));
+app.use(cors({ origin: "https://nouveauhealth.azurewebsites.net/", methods: ["GET", "POST"] }));
 app.use(express.json());
 const httpServer = createServer(app); // Create HTTP server using express app
 const io = new Server(httpServer, {
