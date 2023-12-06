@@ -5,8 +5,10 @@ const duo = require("../services/duo_interface");
 const salt = 10;
 const axios = require("axios");
 const { OAuth2Client } = require("google-auth-library");
+// const CLIENT_ID =
+//   "881661732927-7vr8rkb2i0q11h5te0idk6ucvim2fro3.apps.googleusercontent.com";
 const CLIENT_ID =
-  "881661732927-7vr8rkb2i0q11h5te0idk6ucvim2fro3.apps.googleusercontent.com";
+  "881661732927-mmbgpuotn8vha5s5basldolcel8ad2cv.apps.googleusercontent.com";
 const client = new OAuth2Client();
 let REGISTRATION_URL = "http://localhost:8080/registration";
 // Attempt to log user in - Check if the email exists and that the password is correct
