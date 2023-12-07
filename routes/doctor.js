@@ -2,14 +2,22 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    //doctorPatientsPostController,
-    doctorUpcomingApptsPostController,
-    doctorGetDetailsController,
-    doctorLeaveFeedbackPostController
+  //doctorPatientsPostController,
+  doctorUpcomingApptsPostController,
+  appointmentDetailsPostController,
+  appointmentDetailsInfoPostController,
+  doctorGetDetailsController,
+  doctorLeaveFeedbackPostController,
 } = require("../controllers/doctor");
 
 //router.post("/patients", doctorPatientsPostController);
 router.post("/upcoming", doctorUpcomingApptsPostController);
+router.post("/patientdetails", appointmentDetailsPostController);
+router.post(
+  "/patientdetails/patientdetailsInfo/:patientID/:doctorID",
+  appointmentDetailsInfoPostController
+);
 router.post("/details", doctorGetDetailsController);
-router.post("/feedback", doctorLeaveFeedbackPostController)
+router.post("/feedback", doctorLeaveFeedbackPostController);
+
 module.exports = router;

@@ -1,9 +1,10 @@
 //const patientdb = require("../services/patient");
 const appointmentdb = require("../services/appointment");
-const userdb = require("../services/user")
-const feedbackdb = require("../services/feedback")
-const doctordb = require("../services/doctor")
+const userdb = require("../services/user");
+const feedbackdb = require("../services/feedback");
+const doctordb = require("../services/doctor");
 
+const patientDb = require("../services/patient");
 /*
 // Return all of the given doctor's patients
 // body - json with doctorid
@@ -34,10 +35,9 @@ const doctorUpcomingApptsPostController = async (req, res) => {
     results[i]["patientname"] = user.name;
   }
 
-    res.json(results);
-    res.send();
-}
-
+  res.json(results);
+  res.send();
+};
 
 // Return detailed information about doctor for their page including their profile, their reviews, and whether or not the current patient has had them (if applicable)
 // body - json with fields:
@@ -45,34 +45,39 @@ const doctorUpcomingApptsPostController = async (req, res) => {
 //      patientid(optional) - the id of the patient who is viewing the page
 // return - if unsuccessful, appropriate error message, otherwise profile, feedback and whether or not patient has had this doctor
 const doctorGetDetailsController = async (req, res) => {
-    let today = new Date();
-    body = req.body
-    const feedback = await feedbackdb.getFeedbackByDoctorId(body.doctorid)
+  let today = new Date();
+  body = req.body;
+  const feedback = await feedbackdb.getFeedbackByDoctorId(body.doctorid);
 
-    const doctorProfile = await doctordb.getDoctorProfileById(body.doctorid);
+  const doctorProfile = await doctordb.getDoctorProfileById(body.doctorid);
 
-    const results = {
-        feedback: feedback,
-        doctor: doctorProfile,
+  const results = {
+    feedback: feedback,
+    doctor: doctorProfile,
+  };
+
+  if (body.patientid !== undefined) {
+    const patientDoctors = await appointmentdb.getAllDoctorsUpToPresent(
+      body.patientid,
+      today
+    );
+    results.isPatient = false;
+    for (let i = 0; i < patientDoctors.length; i++) {
+      if (body.doctorid === patientDoctors[i].id) {
+        results.isPatient = true;
+      }
     }
 
-    if (body.patientid !== undefined) {
-        const patientDoctors = await appointmentdb.getAllDoctorsUpToPresent(body.patientid, today)
-        results.isPatient = false;
-        for (let i=0; i<patientDoctors.length; i++) {
-            if(body.doctorid === patientDoctors[i].id) {
-                results.isPatient = true;
-            }
-        }
+    const givenFeedback = await feedbackdb.getFeedbackByDoctorIdAndPatientId(
+      body.doctorid,
+      body.patientid
+    );
+    results.hasGivenFeedback = givenFeedback !== null;
+  }
 
-        const givenFeedback = await feedbackdb.getFeedbackByDoctorIdAndPatientId(body.doctorid, body.patientid);
-        results.hasGivenFeedback = givenFeedback !== null
-    }
-
-    res.json(results);
-    res.send();
-}
-
+  res.json(results);
+  res.send();
+};
 
 // Leave feedback for a given doctor by a given patient
 // body - json with fields:
@@ -82,35 +87,109 @@ const doctorGetDetailsController = async (req, res) => {
 //      written (optional) - written review for doctor
 // return - if unsuccessful, appropriate error message, otherwise feedback object created
 const doctorLeaveFeedbackPostController = async (req, res) => {
-    body = req.body
-    let today = new Date();
+  body = req.body;
+  let today = new Date();
 
-    const patientDoctors = await appointmentdb.getAllDoctorsUpToPresent(body.patientid, today)
-    let isPatient = false;
-    for (let i=0; i<patientDoctors.length; i++) {
-        if(body.doctorid === patientDoctors[i].id) {
-            isPatient = true;
-        }
+  const patientDoctors = await appointmentdb.getAllDoctorsUpToPresent(
+    body.patientid,
+    today
+  );
+  let isPatient = false;
+  for (let i = 0; i < patientDoctors.length; i++) {
+    if (body.doctorid === patientDoctors[i].id) {
+      isPatient = true;
     }
+  }
 
-    if (!isPatient) {
-        res.status(400);
-        res.send("Error sending feedback: You have not had an appointment with this doctor");
-        return;
+  if (!isPatient) {
+    res.status(400);
+    res.send(
+      "Error sending feedback: You have not had an appointment with this doctor"
+    );
+    return;
+  }
+
+  const results = await feedbackdb.postFeedback(body);
+
+  res.json(results);
+  res.send();
+};
+
+const appointmentDetailsPostController = async (req, res) => {
+  const body = req.body;
+
+  const appointmentsData = await patientDb.getAppointmentDetailsofPatients();
+
+  const filteredAppointments = appointmentsData.filter(
+    (appointment) => appointment.doctorid === body.doctorID
+  );
+
+  const groupedAppointments = filteredAppointments.reduce(
+    (result, appointment) => {
+      const patientId = appointment.patientid;
+
+      if (!result[patientId]) {
+        result[patientId] = [];
+      }
+
+      result[patientId].push(appointment);
+
+      return result;
+    },
+    {}
+  );
+  const patientDetails = [];
+  for (const patientId in groupedAppointments) {
+    if (Object.hasOwnProperty.call(groupedAppointments, patientId)) {
+      const appointmentsForPatient = groupedAppointments[patientId];
+      const patientName = appointmentsForPatient[0]?.name;
+
+      patientDetails.push({ ID: patientId, patientName: patientName });
     }
-    
-    
-    const results = await feedbackdb.postFeedback(body)
+  }
+  res.json(patientDetails);
+  res.send();
+};
 
-    res.json(results);
-    res.send();
-}
+const appointmentDetailsInfoPostController = async (req, res) => {
+  const appointmentsData = await patientDb.getAppointmentDetailsofPatients();
 
+  const filteredAppointments = appointmentsData.filter(
+    (appointment) => appointment.doctorid == req.params.doctorID
+  );
 
+  const groupedAppointments = filteredAppointments.reduce(
+    (result, appointment) => {
+      const patientId = appointment.patientid;
+
+      if (!result[patientId]) {
+        result[patientId] = [];
+      }
+
+      result[patientId].push(appointment);
+
+      return result;
+    },
+    {}
+  );
+
+  const patientDetailsInfo = [];
+  for (const patientId in groupedAppointments) {
+    if (patientId == req.params.patientID) {
+      patientDetailsInfo.push(groupedAppointments[patientId]);
+    }
+  }
+
+  res.json(patientDetailsInfo);
+  res.send();
+};
 
 module.exports = {
-    //doctorPatientsPostController,
-    doctorUpcomingApptsPostController,
-    doctorGetDetailsController,
-    doctorLeaveFeedbackPostController
+  //doctorPatientsPostController,
+  doctorUpcomingApptsPostController,
+  appointmentDetailsPostController,
+  appointmentDetailsInfoPostController,
+  doctorUpcomingApptsPostController,
+  doctorGetDetailsController,
+  doctorLeaveFeedbackPostController,
 };
