@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
@@ -28,7 +28,7 @@ model appointments {
   apptid                            Int         @id @default(autoincrement())
   doctorid                          Int
   patientid                         Int
-  date                              DateTime    @db.DateTime(0)
+  date                              DateTime    @db.DateTime()
   symptoms                          String?     @db.Text
   covidtest                         Boolean?
   user_appointments_doctoridTouser  user        @relation("appointments_doctoridTouser", fields: [doctorid], references: [userid], onDelete: NoAction, onUpdate: NoAction, map: "appointments_ibfk_1")
