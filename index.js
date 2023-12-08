@@ -19,7 +19,9 @@ const app = express();
 const PORT = 8080;
 // Attach Express app to the HTTP server
 
-app.use(cors({ origin: "https://nouveauhealth.azurewebsites.net"}));
+app.use(cors({ origin: "https://nouveauhealth.azurewebsites.net" }));
+// app.use(cors({ origin: "http://localhost:3000" }));
+
 app.use(express.json());
 const httpServer = createServer(app); // Create HTTP server using express app
 const io = new Server(httpServer, {
@@ -28,6 +30,13 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"],
   },
 });
+
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//     methods: ["GET", "POST"],
+//   },
+// });
 
 io.use((socket, next) => {
   const sessionId = socket.handshake.auth.sessionId;

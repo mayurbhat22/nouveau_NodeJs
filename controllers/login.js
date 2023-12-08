@@ -10,7 +10,8 @@ const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID =
   "881661732927-mmbgpuotn8vha5s5basldolcel8ad2cv.apps.googleusercontent.com";
 const client = new OAuth2Client();
-let REGISTRATION_URL = "http://localhost:8080/registration";
+// let REGISTRATION_URL = "http://localhost:8080/registration";
+let REGISTRATION_URL = "https://nouveauhealth.azurewebsites.net";
 // Attempt to log user in - Check if the email exists and that the password is correct
 // body - json with fields email, password, and role
 // return - if unsuccessful, appropriate error message, otherwise the id and mfa status of the user who just logged in

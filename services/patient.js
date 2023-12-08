@@ -14,13 +14,23 @@ const prisma = new PrismaClient();
 //   return allPatientIds.map((patient) => patient.userid);
 // }
 
+// async function getAppointmentDetailsofPatients() {
+//   const appointmentsWithPatients = await prisma.$queryRaw`
+//     SELECT *
+//     FROM Nouveau.appointments AS a
+//     JOIN Nouveau.[user] AS u ON a.patientid = u.userid
+//     WHERE u.role = 'patient';
+//   `;
+//   return appointmentsWithPatients;
+// }
+
 async function getAppointmentDetailsofPatients() {
   const appointmentsWithPatients = await prisma.$queryRaw`
-  SELECT *
-  FROM Nouveau.appointments a
-  JOIN Nouveau.user u ON a.patientid = u.userid
-  WHERE u.role = 'patient';
-`;
+    SELECT *
+    FROM appointments AS a
+    JOIN [user] AS u ON a.patientid = u.userid
+    WHERE CAST(u.role AS varchar) = 'patient';
+  `;
   return appointmentsWithPatients;
 }
 
